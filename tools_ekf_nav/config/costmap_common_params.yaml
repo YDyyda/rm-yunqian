@@ -1,0 +1,35 @@
+#这个文件主要用于配置基本的参数，这些参数会被用于local_costmap和global_costmap http://wiki.ros.org/navigation/Tutorials/RobotSetup
+
+#定义了将要向costmap传递信息的传感器列表，设定导航包所使用的传感器发布的话题,同时作为以下的命名空间
+observation_sources: scan
+#topic表示传感器发布的话题名称，而marking和clearing参数用来表示是否需要使用传感器的实时信息来添加或清除代价地图中的障碍物信息
+scan: {data_type: LaserScan, topic: /scan, marking: true, clearing: true}
+
+#将障碍物插入代价地图的最大范围/米，检测到一个距离小于2.5m的障碍物，就会将这个障碍物引入到代价地图中
+obstacle_range: 3
+
+#从地图中扫描出障碍物的最大范围/米，实时观察3m范围内代价地图中的障碍物
+raytrace_range: 3
+
+#代价比例系数，越大则代价值越小，cost_scaling_factor和inflation_radius一起调
+#cost_scaling_factor越大占用的计算量越小
+# cost_scaling_factor: 25
+
+#将机器人的几何参数告诉导航功能包集，footprint表示多边形面积，robot_radius表示圆形
+# footprint: [[0.175, 0.125], [-0.175, 0.125], [-0.175, -0.125], [0.175, -0.125]]
+# footprint: [[0.175, 0], [-0.175, 0], [-0.175, 0], [0.175, 0]]
+# robot_radius: 0.01
+
+#等待坐标变换发布信息的超时时间
+transform_tolerance: 2 
+
+#膨胀半径，扩展在碰撞区域以外的代价区域，给定机器人与障碍物之间必须要保持的最小距离0.20
+# inflation_radius: 0.2
+
+#代价地图精度，即每个网格的尺寸
+resolution: 0.01
+
+map_type: costmap
+
+
+

@@ -1,0 +1,11 @@
+<launch>
+    <!-- 底盘+雷达+TF -->
+    <include file="$(find nav_pkg)/launch/base_robot.launch"/>
+    <!-- 地图 -->
+    <arg name="map" default="2023_11_05_B208.yaml" />
+    <node name="map_server" pkg="map_server" type="map_server" args="$(find nav_pkg)/maps/$(arg map)" output="screen"/>
+    <!-- 导航move_base -->
+    <include file="$(find nav_pkg)/launch/move_base.launch"/>
+    <!-- AMCL定位 -->
+    <include file="$(find nav_pkg)/launch/amcl.launch" />
+</launch>

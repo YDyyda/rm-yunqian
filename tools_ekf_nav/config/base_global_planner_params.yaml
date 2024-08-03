@@ -1,0 +1,19 @@
+GlobalPlanner:
+  allow_unknown: true
+  default_tolerance: 0.05
+  use_dijkstra: true
+  use_quadratic: true
+  use_grid_path: false
+  outline_map: false
+  old_navfn_behavior: false
+
+  visualize_potential: false
+  publish_potential: true
+  
+  # 这三个参数关乎全局路径的顺化程度
+  lethal_cost: 253
+  neutral_cost: 1
+  cost_factor: 2.0
+
+  orientation_mode: 0
+  orientation_window_size: 1

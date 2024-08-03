@@ -1,0 +1,41 @@
+<launch>
+
+    <!-- 标签 -->
+    <arg name="base_frame"     default="base_link"/>  
+    <arg name="odom_frame"     default="odom"/>  
+    <arg name="imu_frame"      default="imu_link"/>  
+    <arg name="odom_topic"     default="odom"/>  
+    <arg name="imu_topic"      default="imu"/>  
+    <arg name="battery_topic"  default="bat_vol"/>  
+    <arg name="cmd_vel_topic"  default="cmd_vel"/>  
+    
+    <!-- 麦轮r20_mec/四轮差速r20_fwd/二轮差速r20_twd/阿克曼r20_akm -->
+    <arg name="robot_type"     default="r20_mec"/> 
+    
+    <!-- 是否发布里程计坐标变换 -->
+    <arg name="pub_odom_tf"    default="true"/>   
+
+    <!-- 启动机器人底盘驱动节点 -->
+    <node name="tarkbot_robot" pkg="tarkbot_robot" type="tarkbot_robot" output="screen" respawn="false">
+        <!-- 机器人坐标frame -->
+        <param name="base_frame"        value="$(arg base_frame)"/> 
+        <param name="odom_frame"        value="$(arg odom_frame)"/>     
+        <param name="imu_frame"         value="$(arg imu_frame)"/>   
+
+        <!-- 发布的话题 -->
+        <param name="odom_topic"        value="$(arg odom_topic)"/> 
+        <param name="imu_topic"         value="$(arg imu_topic)"/> 
+        <param name="battery_topic"     value="$(arg battery_topic)"/> 
+
+        <!-- 订阅的话题 -->
+        <param name="cmd_vel_topic"     value="$(arg cmd_vel_topic)"/> 
+
+        <!-- 机器人配置参数 -->
+        <param name="robot_port"        value="/dev/ttyACM0"/> 
+        <param name="robot_port_baud"   value="115200"/>
+        <param name="pub_odom_tf"       value="$(arg pub_odom_tf)"/> 
+
+        <param name="robot_type_send"  value="$(arg robot_type)"/>
+
+        </node>
+</launch>

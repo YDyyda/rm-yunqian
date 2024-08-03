@@ -1,0 +1,8 @@
+<launch>
+    <!-- 底盘控制通信 -->
+    <include file="$(find tarkbot_robot)/launch/robot.launch"/>
+    <!-- 雷达驱动 -->
+    <include file="$(find rplidar_ros)/launch/start_lidar_all.launch"/>
+    <!-- 底盘到雷达和惯导坐标变换 -->
+    <include file="$(find nav_pkg)/launch/transform_base_to_laser+imu.launch"/>
+</launch>

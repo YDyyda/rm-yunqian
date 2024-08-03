@@ -1,0 +1,141 @@
+TebLocalPlannerROS:
+  odom_topic: odom  #里程计的话题名称，用于获取机器人的当前位置和姿态信息。
+  map_frame: /map # 地图坐标系的名称。
+
+
+# 如果电机性能好，可以直接把acc_lim_x设置为0，表示没有约束。 后面的角速度和角加速度约束也是同理，
+# 制约舵机转向的速度和加速度，左右转动的过程也都受这个限制。
+# 但是不代表你限制高了，转向的速度就快了，还有高速的转向也可能会带来振荡！
+  acc_lim_x: 0.15 # 机器人在x轴方向的加速度限制。
+  acc_lim_y: 0.15 # 机器人在y轴方向的加速度限制。
+  acc_lim_theta: 2.5  #机器人在旋转角度方向的加速度限制。
+
+  max_vel_x: 16.25  #机器人在x轴方向的最大线速度。
+
+  # max_vel_x_backwards是最大倒车速度，这个参数是不能设置为0或者负数的，否则会导致错误，
+  # TEB是不能够完全禁止倒车的，只能把倒车的惩罚提高，也就是提高前进的权重，
+  # 但是不管权重多高，当你参数不合适，无法规划出前进的决策时，还是会出现停滞或者倒车的结果的。除非你速度控制不用规划器发布的/cmd_vel话题。
+  max_vel_x_backwards: 16.45  #机器人在后退时的最大线速度。
+
+  max_vel_y: 16.25  #机器人在y轴方向的最大线速度。
+  max_vel_theta: 16.55  #机器人旋转的最大角速度。
+
+#min_turning_radius就是最小转向半径了，这个参数还是比较重要的！可以大致估算，不过转向半径肯定在一米以内，
+# 可以按需设置，转向半径如果大了，U形弯就会外道入弯，能比较轻松过弯，不过小弯道的时候也会贴外侧，
+# 这样会比较浪费时间，但是如果小了，小弯会贴内，节省时间，但是U形弯就会内侧入弯，那就有可能过不了弯了。所以需要自己调节一下。
+  min_turning_radius: 0.0 #机器人的最小转向半径。这个参数决定了机器人的转弯能力，需要根据实际情况进行调整。
+
+  
+  is_footprint_dynamic: false #是否使用动态足迹。如果设置为true，足迹将会根据机器人当前姿态的变化而变化。
+
+  #为了提速采用线模型，但是容易撞，多边形稳妥一点
+  footprint_model:
+    type: "polygon"
+    vertices: [[0.177, 0.13], [-0.177, 0.13], [-0.177, -0.13], [0.177, -0.13]]
+    # type: "line"
+    # line_start: [-0.18, 0.0]
+    # line_end: [0.18, 0.0]
+
+  trans_stopped_vel: 0.25
+  theta_stopped_vel: 0.25
+  yaw_goal_tolerance: 1 #目标姿态的偏差容许度，以弧度为单位。
+  xy_goal_tolerance: 1  #目标位置的偏差容许度。
+
+  free_goal_vel: false  #是否允许目标速度不为零。
+
+  dt_ref: 0.3 #参考周期，用于在规划过程中生成轨迹的时间间隔。
+  dt_hysteresis: 0.1 #历史周期，用于在计算最优决策时考虑历史轨迹的时间间隔。
+  min_samples: 3 # 在进行路径规划之前需要收集的最小样本数。
+  global_plan_overwrite_orientation: true #是否使用全局路径的方向覆盖局部规划路径的方向。
+
+  #global_plan_viapoint_sep和weight_viapoint，官网上有介绍，这个是关于teb路径对全局路径的追踪权重。在国赛之前我没有调这俩参数，
+  #weight_optimaltime就只能给25左右否则就会撞上障碍物，我胆子比较大把这俩参数改得比较大，避障效果和顺滑程度都好很多，而且会节省一点计算量。
+  global_plan_viapoint_sep: 0.1  #全局路径上的目标点之间的最小距离。
+
+#考虑优化的全局计划子集的最大长度（累积欧几里得距离）
+#这个当然是越大越好，前向距离大，走的就越顺畅
+  max_global_plan_lookahead_dist: 1.0 #1.0 考虑优化的全局计划子集的最大长度。
+  
+  
+  force_reinit_new_goal_dist: 1.0 # 当机器人距离目标位置超过此距离时，强制重新初始化路径规划器。
+
+  #这个是检查距离，这个设置得小一点好，竞速嘛，要啥子安全检测，冲过去就完事儿，
+  #之前说的赛道弯道多有缝隙，会堵住路，如果这个值按照默认，会经常报错teb路径不合适导致车子卡在那里不能动。
+  feasibility_check_no_poses: 10    #进行可行性检查时忽略的姿态数量。
+
+  publish_feedback: false # 是否发布路径规划的反馈信息。
+
+  # 正确后退
+  allow_init_with_backwards_motion: true #是否允许以倒车的方式进行路径规划。
+  
+  exact_arc_length: false
+  shrink_horizon_backup: true
+  shrink_horizon_min_duration: 10.0
+
+  # teb默认不会采用代价地图的膨胀半径什么的
+  min_obstacle_dist: 0.33 #0.25 避障距离(障碍物膨胀半径)机器人与障碍物之间的最小距离。
+
+  obstacle_poses_affected: 50
+  include_costmap_obstacles: true #是否考虑代价地图中的障碍物。
+  costmap_obstacles_behind_robot_dist: 1.0 #考虑机器人后方代价地图中的障碍物的距离。
+  inflation_dist: 0.5  #考虑机器人后方代价地图中的障碍物的距离。
+  include_dynamic_obstacles: false  #是否考虑动态障碍物。
+  legacy_obstacle_association: false  # 是否使用旧版本的障碍物关联方法。
+  obstacle_association_force_inclusion_factor: 0.4  #强制包含障碍物的因子，用于确保障碍物被正确关联。
+  obstacle_association_cutoff_factor: 5 # 障碍物关联的截断因子，用于限制障碍物的最大关联距离。
+  costmap_converter_plugin: "line"  #使用的代价地图转换器插件。
+  costmap_converter_spin_thread: true #代价地图转换器是否在独立线程中运行。
+  costmap_converter_rate: 5.0 #代价地图转换器的执行频率。
+
+  no_inner_iterations: 3  #内部迭代次数，用于优化器收敛。
+  no_outer_iterations: 3  #外部迭代次数，用于优化器收敛。
+  penalty_epsilon: 0.1  #正则化项的惩罚因子。
+  weight_acc_lim_x: 1.0 #线性加速度限制的权重。
+  weight_acc_lim_theta: 1.0 #角速度限制的权重。
+  weight_max_vel_x: 3.0 #最大线性速度的权重。
+  weight_max_vel_y: 5.0
+  weight_max_vel_theta: 100 #最大角速度的权重。
+ 
+ #这个对应的是Y方向运动的权重，在wiki上有说，这个不设置车子是不会横着走的，越小越倾向与横着走，这个我给的200。
+ #没有给太小，试了一下，设置了这个以后会顺滑不少，同时amcl也会变准一些（我在amcl里给的是全向模型）。
+  weight_kinematics_nh: 125.0 #调整顺应纵向运动和非顺应横向运动（扫射）之间的权衡。
+  
+
+  # 这个参数就是倒车了，不过这个参数的意思是迫使机器人只选择前进的方向，也就是权重越大，倒车惩罚越大。
+  # 这个权重的范围是0~1000，按需设置吧，不过即便是设置成1000也没有办法完全禁止停滞，倒车的效果。
+  # 因为是否能前进，不仅仅只是看这个参数。还需要看转向半径，当前速度，等等一系列参数的决策。
+  weight_kinematics_forward_drive: 1000.0
+
+  #是机器人最小转向半径的权重，越大则越容易达到最小转向半径的情况
+  weight_kinematics_turning_radius: 900.0
+
+  #最优时间权重，如果大了，那么车会在直道上快速加速，并且路径规划的也会切内道，说白了，在不撞的情况下越大越好
+  weight_optimaltime: 45.5 #这个参数是最优时间权重，如果大了，那么车会在直道上快速加速，并且路径规划的也会切内道
+  
+  weight_obstacle: 35.0 #障碍物的权重，用于路径规划时避开障碍物。
+  weight_viapoint: 200.0  # 经过点的权重，用于指导路径规划通过特定的点。
+  weight_inflation: 0.5  # 充气权重，用于在代价地图中为障碍物增加半径。
+  weight_adapt_factor: 2.0  #适应性权重因子，用于调整权重。
+
+  enable_homotopy_class_planning: false #是否启用拓扑类路径规划。
+
+  enable_multithreading: false  #是否启用多线程规划。
+
+  max_number_classes: 2 #4 改 2 规划出的最多轨迹数,这个参数是可以解决多个障碍堵路规划抖动问题
+  selection_cost_hysteresis: 1.0  #惯性权重切换的比例。
+  selection_obst_cost_scale: 100.0  # 障碍物代价的比例因子。
+  selection_viapoint_cost_scale: 1.0  #经过点代价的比例因子。
+  selection_alternative_time_cost: false  #是否基于时间代价选择备选路径。
+  roadmap_graph_no_samples: 50  #路径规划中的采样点数目。
+  roadmap_graph_area_width: 5 #路径规划图的区域宽度。
+  h_signature_prescaler: 1.0  # H签名预处理器。
+  h_signature_threshold: 0.1  #H签名阈值。
+  obstacle_heading_threshold: 0.45  # 障碍物朝向阈值。
+  visualize_hc_graph: false #是否可视化拓扑图。
+  viapoints_all_candidates: true  #是否将所有候选点都视为经过点。
+  switching_blocking_period: 0.0  # 切换的阻塞时间。
+
+  # wheelbase是驱动轴和转向轴之间的距离，根据车模实际情况设置就好
+  wheelbase: 0.2
+
+
