@@ -8,6 +8,29 @@ author:  yangdong
 
 
 
+## 代码框架说明
+
+```yaml
+
+├── fdilink_ahrs   # imu启动
+├── imu_tools	   # imu滤波
+├── laser_filters  # 雷达滤波
+├── nav_pkg        # 导航框架v1.0
+├── navigation     # 导航功能包 	 
+├── pointcloud_to_laserscan-1.4.1 # 雷达转点云
+├── robot_pose_ekf # imu,odom紧耦合ekf
+├── rplidar_ros	   # 雷达启动
+	├── src/
+├── tarkbot_robot  # 底盘通信
+	├── src/
+├── tools_ekf_nav  # 导航框架v2.0
+├── README.md 
+└── CMakeLists.txt 
+
+```
+
+
+
 ## 一、ROS导航基础框架搭建
 
 
@@ -318,6 +341,7 @@ int main(int argc, char** argv){
 | 0xAA 0x44 | 0x02 | pitch | yaw   | command | 0x77   |
 
 ```
+
 帧号决定数据类型：
 	底盘数据：0x01
 	云台数据：0x02
@@ -332,9 +356,6 @@ TCP通信主要用于ROS与视觉进行通信：
 
 
 
-## 四、后续任务
+## 四、仿真
 
-
-
-## 五、结语
 
